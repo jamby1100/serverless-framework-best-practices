@@ -1,0 +1,65 @@
+service: sf-blackbelt
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: python3.8
+  lambdaHashingVersion: '20201221'
+  environment:
+    DB_USER: ${ssm:/sf-blackbelt/${self:provider.stage}/DB_USER} 
+    DB_PASSWORD: ${ssm:/sf-blackbelt/${self:provider.stage}/DB_PASSWORD}
+
+functions:
+  completeOrder:
+    handler: handler.complete_order
+    timeout: 30
+    events:
+      - http:
+          path: /orders/complete
+          method: post
+    environment:
+      FREE_SHIPPING_SUBTOTAL: ${self:custom.environment.FREE_SHIPPING_SUBTOTAL}
+      MINIMUM_CHECKOUT_SUBTOTAL: ${self:custom.environment.MINIMUM_CHECKOUT_SUBTOTAL}
+
+  calculateOrder:
+    handler: handler.calculate_order
+    timeout: 30
+    events:
+      - http:
+          path: /calculate_order
+          method: post
+    environment:
+      FREE_SHIPPING_SUBTOTAL: ${self:custom.environment.FREE_SHIPPING_SUBTOTAL}
+      MINIMUM_CHECKOUT_SUBTOTAL: ${self:custom.environment.MINIMUM_CHECKOUT_SUBTOTAL}
+
+  homepage:
+    handler: handler.complete_order
+    timeout: 30
+    events:
+      - http:
+          path: /
+          method: GET
+    environment:
+      FAQ_BLOG_ID: ${self:custom.environment.FAQ_BLOG_ID}
+      MAIN_BANNER: ${self:custom.environment.MAIN_BANNER}
+
+custom:
+  environment:
+    FREE_SHIPPING_SUBTOTAL: 1000
+    MINIMUM_CHECKOUT_SUBTOTAL: 300
+    FAQ_BLOG_ID: ${env:FAQ_BLOG_ID}
+    MAIN_BANNER: ${env:MAIN_BANNER}
+  prune:
+    automatic: true
+    includeLayers: true
+    number: 1
+
+package:
+  exclude:
+    - venv/**
+    - node_modules/**
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-prune-plugin
