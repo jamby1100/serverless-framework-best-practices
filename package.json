@@ -6,6 +6,7 @@
   "devDependencies": {
     "serverless": "^2.72.0",
     "serverless-dotenv-plugin": "^3.12.2",
-    "serverless-prune-plugin": "^2.0.1"
+    "serverless-prune-plugin": "^2.0.1",
+    "serverless-python-requirements": "^5.3.1"
   }
 }

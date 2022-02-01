@@ -4,11 +4,13 @@ frameworkVersion: '2'
 
 provider:
   name: aws
-  runtime: python3.8
+  runtime: python3.7
   lambdaHashingVersion: '20201221'
   environment:
     DB_USER: ${ssm:/sf-blackbelt/${self:provider.stage}/DB_USER} 
     DB_PASSWORD: ${ssm:/sf-blackbelt/${self:provider.stage}/DB_PASSWORD}
+  layers:
+    - Ref: PythonRequirementsLambdaLayer
 
 functions:
   completeOrder:
@@ -54,6 +56,9 @@ custom:
     automatic: true
     includeLayers: true
     number: 1
+  pythonRequirements:
+    pythonBin: python3
+    layer: true
 
 package:
   exclude:
@@ -63,3 +68,4 @@ package:
 plugins:
   - serverless-dotenv-plugin
   - serverless-prune-plugin
+  - serverless-python-requirements
