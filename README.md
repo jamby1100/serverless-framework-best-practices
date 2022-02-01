@@ -6,6 +6,10 @@ python3 -m venv venv
 source venv/bin/activate
 
 pip install boto3
+
+serverless plugin install -n serverless-dotenv-plugin
+serverless plugin install -n serverless-prune-plugin
+
 ```
 
 Enter the python console and create the following parameter store by using the `python` command or `AWS_PROFILE=profile python`
@@ -23,4 +27,10 @@ client.put_parameter(Name="/sf-blackbelt/dev/DB_PASSWORD", Value="dev_secure_pas
 # define for UAT
 client.put_parameter(Name="/sf-blackbelt/uat/DB_USER", Value="uat-admin", Type="String", Overwrite=True)
 client.put_parameter(Name="/sf-blackbelt/uat/DB_PASSWORD", Value="uat_secure_password", Type="String", Overwrite=True)
-```# serverless-framework-best-practices
+```
+
+Then, we deploy:
+
+```sh
+NODE_ENV=develop serverless deploy --stage dev --region ap-southeast-1
+```
